@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -10,27 +10,13 @@ import CharacterSheetCard from "@/components/CharacterSheetCard";
 import MangaPageViewer from "@/components/MangaPageViewer";
 import { StoryData, DialogueItem } from "@/lib/types/manga";
 import { exportMangaPDF } from "@/lib/pdf/exporter";
-import {
-  ArrowLeft,
-  Download,
-  Share2,
-  Sparkles,
-  BookOpen,
-  UserCheck,
-  Layers,
-  CheckCircle2,
-  RefreshCw,
-  FileText,
-  Copy,
-  Check,
-} from "lucide-react";
 
 export default function StoryStudioPage() {
   const routeParams = useParams();
   const id = typeof routeParams?.id === "string" ? routeParams.id : "demo-story-01";
   const [story, setStory] = useState<StoryData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"viewer" | "characters" | "script">("viewer");
+  const [activeTab, setActiveTab] = useState<"reader" | "studio" | "characters">("reader");
   const [exportingPDF, setExportingPDF] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
@@ -97,7 +83,6 @@ export default function StoryStudioPage() {
       const res = await fetch(`/api/panels/${panelId}/regenerate`, { method: "POST" });
       const data = await res.json();
       if (data.success && data.panel && story) {
-        // Update local state
         const nextPages = (story.pages || []).map((page) => ({
           ...page,
           panels: page.panels.map((p) => (p.id === panelId ? data.panel : p)),
@@ -137,10 +122,11 @@ export default function StoryStudioPage() {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
-            <span className="text-xs font-mono text-zinc-400">Loading Manga Studio...</span>
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="flex flex-col items-center gap-3 bg-zinc-900/60 p-8 rounded-2xl border border-zinc-800 max-w-sm w-full text-center">
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-rose-500 border-t-transparent" />
+            <span className="text-sm font-semibold text-white">Loading Manga Studio</span>
+            <p className="text-xs text-zinc-400">Fetching storyboard frames, character consistency models, and speech bubbles...</p>
           </div>
         </div>
         <Footer />
@@ -153,15 +139,14 @@ export default function StoryStudioPage() {
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center p-6 text-center">
-          <div className="space-y-4 max-w-md">
-            <h2 className="text-xl font-bold text-white">Story Not Found</h2>
-            <p className="text-xs text-zinc-400">This manga project may have been deleted or the link is invalid.</p>
+          <div className="space-y-4 max-w-md bg-zinc-900/40 p-8 rounded-2xl border border-zinc-800">
+            <h2 className="text-lg font-bold text-white">Story Not Found</h2>
+            <p className="text-xs text-zinc-400">This manga project may have been removed or the URL is incorrect.</p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-800 px-4 py-2 text-xs font-bold text-white"
+              className="inline-flex items-center rounded-lg bg-zinc-800 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-700"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Return to Dashboard
+              Return to Library
             </Link>
           </div>
         </div>
@@ -176,110 +161,110 @@ export default function StoryStudioPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col selection:bg-rose-500 selection:text-white">
       <Navbar />
 
-      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 py-6 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-6">
-          {/* Top Bar Navigation & Actions */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+          {/* Header Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
+            <div className="flex items-start sm:items-center gap-3">
               <Link
                 href="/dashboard"
-                className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors border border-zinc-800"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 border border-zinc-800 text-xs font-medium"
+                title="Back to Library"
               >
-                <ArrowLeft className="h-4 w-4" />
+                ←
               </Link>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-black text-white">{story.title}</h1>
-                  <span className="rounded-lg bg-zinc-800 px-2 py-0.5 text-[10px] font-bold text-zinc-300 uppercase border border-zinc-700">
+                  <h1 className="text-xl sm:text-2xl font-bold text-white">{story.title}</h1>
+                  <span className="rounded bg-zinc-900 px-2 py-0.5 text-[10px] font-mono text-zinc-400 uppercase border border-zinc-800">
                     {story.style}
                   </span>
+                  <span className="rounded bg-zinc-900 px-2 py-0.5 text-[10px] font-mono text-zinc-400 uppercase border border-zinc-800">
+                    {story.colorMode === "bw" ? "B&W" : "Color"}
+                  </span>
                 </div>
-                <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
+                <p className="text-xs text-zinc-400 mt-1 line-clamp-1 max-w-2xl">
                   {story.logline || story.body}
                 </p>
               </div>
             </div>
 
-            {/* Actions: Download PDF, Share Link */}
-            <div className="flex items-center gap-2.5">
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleCopyShareLink}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-xs font-bold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+                className="rounded-lg bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
               >
-                {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                {copiedLink ? "Link Copied!" : "Share Link"}
+                {copiedLink ? "Link Copied ✓" : "Share"}
               </button>
 
               <button
                 onClick={handleDownloadPDF}
-                disabled={!isDone || exportingPDF}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 px-4 py-2 text-xs font-extrabold text-white shadow-lg shadow-rose-600/30 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                disabled={exportingPDF || !isDone}
+                className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-rose-500 disabled:opacity-40 transition-all cursor-pointer shadow-sm"
               >
-                {exportingPDF ? (
-                  <>
-                    <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Generating PDF...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4" />
-                    Download A5 Manga PDF
-                  </>
-                )}
+                {exportingPDF ? "Exporting PDF..." : "Download PDF"}
               </button>
             </div>
           </div>
 
-          {/* Progress Timeline Tracker (if generating or completed) */}
-          <ProgressTimeline
-            status={story.status}
-            progress={story.progress}
-            error={story.error}
-            onApproveCheckpoint={handleApproveCheckpoint}
-          />
+          {/* Pipeline Progress Indicator if Still Generating */}
+          {!isDone && (
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-white">Generating Manga Pipeline</span>
+                <span className="font-mono text-zinc-400">{story.progress}%</span>
+              </div>
+              <ProgressTimeline status={story.status} />
+              <p className="text-xs text-zinc-400">
+                Generating 2D manga scenes with background staging, locking character consistency, and rendering vector speech bubbles...
+              </p>
+            </div>
+          )}
 
-          {/* Tab Navigation: Viewer, Character Sheets, Script Outline */}
-          <div className="flex items-center gap-1 border-b border-zinc-800 pt-2">
-            <button
-              onClick={() => setActiveTab("viewer")}
-              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
-                activeTab === "viewer"
-                  ? "border-rose-500 text-white"
-                  : "border-transparent text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              <BookOpen className="h-3.5 w-3.5" />
-              Manga Pages & Lettering ({story.pages?.length || 0})
-            </button>
+          {/* Tab Navigation */}
+          <div className="flex items-center justify-between border-b border-zinc-800">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setActiveTab("reader")}
+                className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+                  activeTab === "reader"
+                    ? "border-rose-500 text-white font-semibold"
+                    : "border-transparent text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Read On-Screen
+              </button>
+              <button
+                onClick={() => setActiveTab("characters")}
+                className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+                  activeTab === "characters"
+                    ? "border-rose-500 text-white font-semibold"
+                    : "border-transparent text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Characters ({story.characters?.length || 0})
+              </button>
+              <button
+                onClick={() => setActiveTab("studio")}
+                className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+                  activeTab === "studio"
+                    ? "border-rose-500 text-white font-semibold"
+                    : "border-transparent text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Script & Panels
+              </button>
+            </div>
 
-            <button
-              onClick={() => setActiveTab("characters")}
-              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
-                activeTab === "characters"
-                  ? "border-rose-500 text-white"
-                  : "border-transparent text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              <UserCheck className="h-3.5 w-3.5" />
-              Character Reference Sheets ({story.characters?.length || 0})
-            </button>
-
-            <button
-              onClick={() => setActiveTab("script")}
-              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
-                activeTab === "script"
-                  ? "border-rose-500 text-white"
-                  : "border-transparent text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              <FileText className="h-3.5 w-3.5" />
-              Raw Script Outline
-            </button>
+            <div className="text-xs text-zinc-500 font-mono hidden sm:block">
+              {story.pages?.length || 0} Pages Generated
+            </div>
           </div>
 
-          {/* TAB 1: Manga Page Viewer */}
-          {activeTab === "viewer" && (
-            <div className="space-y-6 pt-2">
+          {/* Tab Content */}
+          {activeTab === "reader" && (
+            <div className="space-y-4">
               <MangaPageViewer
                 pages={story.pages || []}
                 title={story.title}
@@ -287,51 +272,76 @@ export default function StoryStudioPage() {
                 colorMode={story.colorMode}
                 onUpdatePanelDialogue={handleUpdateDialogue}
                 onRegeneratePanel={handleRegeneratePanel}
-                readOnly={false}
+                onDownloadPDF={handleDownloadPDF}
+                isExportingPDF={exportingPDF}
               />
             </div>
           )}
 
-          {/* TAB 2: Character Sheets */}
           {activeTab === "characters" && (
-            <div className="space-y-4 pt-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-extrabold text-white">
-                    Character Turnaround Sheets
-                  </h3>
-                  <p className="text-xs text-zinc-400">
-                    Locked visual descriptions ensure characters remain consistent in every panel.
-                  </p>
-                </div>
+            <div className="space-y-4">
+              <div className="text-xs text-zinc-400">
+                2D character concept model sheets generated for prompt locking and scene consistency.
               </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                {(story.characters || []).map((char) => (
-                  <CharacterSheetCard
-                    key={char.id}
-                    character={char}
-                    style={story.style}
-                    colorMode={story.colorMode}
-                    onApprove={handleApproveCheckpoint}
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {story.characters.map((char) => (
+                  <CharacterSheetCard key={char.id} character={char} />
                 ))}
               </div>
             </div>
           )}
 
-          {/* TAB 3: Raw Story & Script Narrative */}
-          {activeTab === "script" && (
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 space-y-4">
-              <div>
-                <h3 className="text-base font-bold text-white">Raw Story Narrative</h3>
-                <p className="text-xs text-zinc-400">
-                  Original story provided to the Claude LLM script analyzer.
+          {activeTab === "studio" && (
+            <div className="space-y-6">
+              {/* Original Story Body */}
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 space-y-2">
+                <span className="text-xs font-mono text-zinc-400 font-medium">ORIGINAL NARRATIVE BODY</span>
+                <p className="text-xs leading-relaxed text-zinc-300 whitespace-pre-wrap">
+                  {story.body}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-zinc-950 p-4 border border-zinc-800 text-xs text-zinc-300 leading-relaxed font-mono whitespace-pre-wrap">
-                {story.body}
+              {/* Panel Breakdown List */}
+              <div className="space-y-4">
+                <span className="text-xs font-mono text-zinc-400 font-medium">PAGE & PANEL BREAKDOWN</span>
+                {story.pages.map((page) => (
+                  <div key={page.id} className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-4 space-y-3">
+                    <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+                      <span className="text-xs font-bold text-white">PAGE {page.pageNo}</span>
+                      <span className="text-[11px] font-mono text-zinc-400">Layout: {page.layout}</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {page.panels.map((panel) => (
+                        <div key={panel.id} className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 space-y-2">
+                          <div className="aspect-video bg-zinc-900 rounded overflow-hidden">
+                            <img
+                              src={panel.imageUrl}
+                              alt={panel.scene}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
+                              <span>PANEL #{panel.panelNo}</span>
+                              <span>{panel.camera}</span>
+                            </div>
+                            <p className="text-[11px] text-zinc-300 line-clamp-2">{panel.scene}</p>
+                            {panel.dialogue && panel.dialogue.length > 0 && (
+                              <div className="text-[10px] text-zinc-400 font-mono bg-zinc-900 p-1.5 rounded">
+                                {panel.dialogue.map((d, i) => (
+                                  <div key={i}>
+                                    <span className="text-rose-400">{d.speaker}:</span> {d.text}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

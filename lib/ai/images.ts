@@ -101,6 +101,7 @@ export async function generatePanelImage(params: {
     emotion,
     charName: charactersPresent[0]?.name,
     panelNo,
+    aspectRatio,
   });
 }
 

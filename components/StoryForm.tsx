@@ -5,7 +5,6 @@ import { ColorMode, MangaArtStyle, ReadingDirection } from "@/lib/types/manga";
 import StylePicker from "./StylePicker";
 import { PRESET_STORY_TEMPLATES } from "../lib/sample-data";
 import { calculateStoryCreditCost } from "../lib/credits";
-import { Sparkles, BookOpen, Compass, Zap, Layers, ArrowRight, Wand2 } from "lucide-react";
 
 interface StoryFormProps {
   onSubmitStory: (params: {
@@ -60,12 +59,11 @@ export default function StoryForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Preset Story Inspiration Chips */}
-      <div className="space-y-2.5">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">
-          <Wand2 className="h-3.5 w-3.5 text-rose-400" />
-          <span>Quick Test Inspirations (One-click presets):</span>
+      <div className="space-y-2">
+        <div className="text-xs font-mono font-medium text-zinc-400">
+          QUICK INSPIRATIONS
         </div>
         <div className="flex flex-wrap gap-2">
           {PRESET_STORY_TEMPLATES.map((preset, idx) => (
@@ -73,9 +71,8 @@ export default function StoryForm({
               key={idx}
               type="button"
               onClick={() => handleApplyPreset(preset)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/70 px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:border-rose-500/60 hover:text-white hover:bg-zinc-850 transition-all cursor-pointer shadow-xs"
+              className="rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-700 hover:text-white transition-all cursor-pointer"
             >
-              <Sparkles className="h-3 w-3 text-amber-400" />
               {preset.title}
             </button>
           ))}
@@ -83,169 +80,148 @@ export default function StoryForm({
       </div>
 
       {/* Title & Story Body Input */}
-      <div className="space-y-4 rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl">
+      <div className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 shadow-lg">
         <div>
-          <label className="block text-sm font-bold text-zinc-100 mb-1.5">
+          <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono mb-1.5">
             Manga Title
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Shadow Blade: The Crimson Rift"
-            className="w-full rounded-2xl bg-zinc-950 px-4 py-3 text-sm font-semibold text-white border border-zinc-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all placeholder:text-zinc-600"
+            placeholder="e.g. Midnight Cyber Samurai"
+            className="w-full rounded-lg bg-zinc-950 px-3.5 py-2.5 text-sm font-medium text-white border border-zinc-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all placeholder:text-zinc-600"
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-sm font-bold text-zinc-100">
-              Story Prompt / Script Narrative <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono">
+              Story Narrative
             </label>
-            <span className="text-xs text-zinc-400 font-mono">
-              {wordCount} words • {body.length} chars
+            <span className="text-[11px] font-mono text-zinc-500">
+              {wordCount} words
             </span>
           </div>
-
           <textarea
-            required
+            rows={6}
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Paste your story, scene, or comic outline here. Claude LLM will automatically extract consistent characters, pace pages, frame camera angles, and format speech balloons..."
-            rows={7}
-            className="w-full rounded-2xl bg-zinc-950 p-4 text-sm text-zinc-200 border border-zinc-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all resize-y placeholder:text-zinc-600 leading-relaxed font-sans"
+            placeholder="Describe your scene, character actions, and environmental atmosphere (e.g. In the night the city was bright with neon signs. Ren stood on the wet asphalt alleyway with katana drawn as sirens echoed in the distance...)"
+            className="w-full rounded-lg bg-zinc-950 px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed text-zinc-100 border border-zinc-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all placeholder:text-zinc-600 font-sans resize-y"
+            required
           />
-          <p className="text-[11px] text-zinc-400 mt-1.5">
-            💡 Tip: Mention key characters by name and describe the climactic action. Dialogue in quotes will be converted into authentic manga speech bubbles.
-          </p>
         </div>
       </div>
 
       {/* Art Style Picker */}
-      <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl">
-        <StylePicker
-          selectedStyle={style}
-          onSelectStyle={setStyle}
-          colorMode={colorMode}
-          onChangeColorMode={setColorMode}
-        />
+      <div className="space-y-2 rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 shadow-lg">
+        <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono">
+          Visual Style
+        </label>
+        <StylePicker selectedStyle={style} onSelectStyle={setStyle} />
       </div>
 
-      {/* Manga Format & Layout Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Reading Direction */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl space-y-3">
-          <div>
-            <label className="block text-sm font-bold text-zinc-100">
-              Reading Direction
-            </label>
-            <p className="text-xs text-zinc-400">
-              Right-to-left matches authentic Japanese tankobon manga volume order.
-            </p>
+      {/* Format Options (Color Mode, Reading Direction, Page Count) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 shadow-lg">
+        {/* Color Mode */}
+        <div>
+          <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono mb-2">
+            Inking / Color
+          </label>
+          <div className="grid grid-cols-2 gap-1.5 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setColorMode("bw")}
+              className={`rounded-md py-1.5 text-xs font-medium transition-colors ${
+                colorMode === "bw"
+                  ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              Classic B&W
+            </button>
+            <button
+              type="button"
+              onClick={() => setColorMode("color")}
+              className={`rounded-md py-1.5 text-xs font-medium transition-colors ${
+                colorMode === "color"
+                  ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              Full Color
+            </button>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-3 pt-1">
+        {/* Reading Direction */}
+        <div>
+          <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono mb-2">
+            Reading Flow
+          </label>
+          <div className="grid grid-cols-2 gap-1.5 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
             <button
               type="button"
               onClick={() => setReadingDirection("rtl")}
-              className={`flex flex-col p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+              className={`rounded-md py-1.5 text-xs font-medium transition-colors ${
                 readingDirection === "rtl"
-                  ? "border-rose-500 bg-rose-950/20 text-white ring-1 ring-rose-500/30"
-                  : "border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:border-zinc-700"
+                  ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
-              <span className="font-bold text-xs text-white">Right-to-Left (RTL)</span>
-              <span className="text-[10px] text-zinc-400 mt-0.5">Traditional Japanese Manga</span>
+              RTL (Japanese)
             </button>
-
             <button
               type="button"
               onClick={() => setReadingDirection("ltr")}
-              className={`flex flex-col p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+              className={`rounded-md py-1.5 text-xs font-medium transition-colors ${
                 readingDirection === "ltr"
-                  ? "border-rose-500 bg-rose-950/20 text-white ring-1 ring-rose-500/30"
-                  : "border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:border-zinc-700"
+                  ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
-              <span className="font-bold text-xs text-white">Left-to-Right (LTR)</span>
-              <span className="text-[10px] text-zinc-400 mt-0.5">Western Graphic Novel</span>
+              LTR (Western)
             </button>
           </div>
         </div>
 
         {/* Target Pages */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="block text-sm font-bold text-zinc-100">
-                Target Page Count
-              </label>
-              <p className="text-xs text-zinc-400">
-                Paces your story across 1 to 6 multi-panel pages.
-              </p>
-            </div>
-            <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-              {creditCost} Credit{creditCost > 1 ? "s" : ""}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2 pt-1">
-            {[1, 2, 4, 6].map((num) => (
+        <div>
+          <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono mb-2">
+            Target Pages
+          </label>
+          <div className="grid grid-cols-3 gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
+            {[1, 2, 4].map((pages) => (
               <button
-                key={num}
+                key={pages}
                 type="button"
-                onClick={() => setTargetPages(num)}
-                className={`py-2.5 rounded-xl border font-bold text-xs transition-all cursor-pointer ${
-                  targetPages === num
-                    ? "border-rose-500 bg-gradient-to-r from-rose-600 to-amber-500 text-white shadow-md shadow-rose-600/30"
-                    : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-white"
+                onClick={() => setTargetPages(pages)}
+                className={`rounded-md py-1.5 text-xs font-mono font-medium transition-colors ${
+                  targetPages === pages
+                    ? "bg-zinc-800 text-white shadow-sm border border-zinc-700"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
-                {num} {num === 1 ? "Page" : "Pages"}
+                {pages}P
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Credit & Submit Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl border border-rose-500/30 bg-gradient-to-r from-rose-950/30 via-zinc-900/80 to-zinc-950 shadow-2xl">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
-            <Zap className="h-5 w-5 fill-amber-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-extrabold text-white">
-                Generation Cost: {creditCost} Credits
-              </span>
-              <span className="text-xs text-zinc-400">
-                (Your Balance: {userCredits} Credits)
-              </span>
-            </div>
-            <span className="text-xs text-zinc-400">
-              Includes character locking, script generation, panel art, lettering & A5 PDF.
-            </span>
-          </div>
+      {/* Submit Button */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <div className="text-xs text-zinc-400">
+          Cost: <span className="text-white font-semibold">{creditCost} Credits</span> ({userCredits} available)
         </div>
 
         <button
           type="submit"
           disabled={!body.trim() || isSubmitting || !hasSufficientCredits}
-          className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 px-7 py-3.5 text-sm font-extrabold text-white shadow-xl shadow-rose-600/30 hover:shadow-rose-600/50 hover:opacity-95 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full sm:w-auto rounded-lg bg-rose-600 px-6 py-2.5 text-xs font-semibold text-white hover:bg-rose-500 disabled:opacity-40 transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2"
         >
-          {isSubmitting ? (
-            <>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              <span>Forging Manga...</span>
-            </>
-          ) : (
-            <>
-              <Sparkles className="h-4 w-4" />
-              <span>Forge Manga PDF</span>
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
+          {isSubmitting ? "Forging Manga..." : "Forge Manga Chapter"}
         </button>
       </div>
     </form>
